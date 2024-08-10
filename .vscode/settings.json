@@ -33,11 +33,24 @@
         "lock",
     ],
     "cSpell.words": [
+        "cgcnn",
+        "convs",
+        "crys",
         "csp",
         "DBSCAN",
         "featurize",
         "featurizers",
         "joblib",
-        "matminer"
+        "keepdim",
+        "logsoftmax",
+        "matminer",
+        "maxae",
+        "multiclass",
+        "multilabel",
+        "pearsonr",
+        "softplus",
+        "softpluses",
+        "spearmanr",
+        "sumed"
     ]
 }

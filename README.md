@@ -1,7 +1,7 @@
 
 # Shotgun CSP
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/TsumiNa/ShutgunCSP)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/TsumiNa/ShotgunCSP)
 
 **Shotgun CSP** is a Python package designed to solve the crystal structure prediction (CSP) problem using a non-iterative, single-shot screening framework. This method leverages a large library of virtually created crystal structures and employs a machine-learning energy predictor for efficient and accurate predictions.
 
@@ -13,6 +13,8 @@
 - High prediction accuracy with reduced computational intensity
 
 ## Installation
+
+Before install  **shotgun-csp**, you have to install **PyTorch (^2.0.0)** first. Please follow the [official installation guidance](https://pytorch.org/get-started/locally/).
 
 To install **shotgun-csp**, you can use [Poetry](https://python-poetry.org/) and [PyPI](https://pypi.org/):
 
@@ -44,7 +46,7 @@ from shotgun_csp.io import VASPInputGenerator
 
 # Example usage
 selector = TemplateSelector()
-templates = selector.from(<pymatgen structures>, with='DBSCAN')
+templates = selector.from(<pymatgen structures>, filter='DBSCAN')
 
 vasp_inputs = VASPInputGenerator(templates)
 ```

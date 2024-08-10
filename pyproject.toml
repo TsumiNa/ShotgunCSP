@@ -7,6 +7,17 @@ license = "Apache-2.0"
 readme = "README.md"
 packages = [{ include = "shotgun_csp" }]
 include = ["pyproject.toml", "README.md", "LICENSE"]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Physics',
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -19,11 +30,11 @@ matminer = "^0.9.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.1"
-Sphinx = "^7.4.7"
+Sphinx = "^8.0.2"
 
 [tool.ruff]
 exclude = [".venv", "venv", "__pycache__", ".git"]
-line-length = 88
+line-length = 120
 indent-width = 4
 src = ["xenonpy"]
 
