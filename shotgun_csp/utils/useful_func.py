@@ -12,7 +12,8 @@ from matminer.featurizers.site import CrystalNNFingerprint
 from matminer.featurizers.structure import SiteStatsFingerprint
 from pymatgen.core import Structure
 from ruamel.yaml import YAML
-from xenonpy._conf import __cfg_root__, __db_version__, __github_username__
+
+from shotgun_csp._conf import __cfg_root__, __db_version__, __github_username__
 
 __all__ = ["camel_to_snake", "get_data_loc", "get_dataset_url", "get_sha256", "absolute_path", "set_env", "config"]
 

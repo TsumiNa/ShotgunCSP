@@ -7,16 +7,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from platform import version as sys_ver
 from sys import version as py_ver
-from typing import Union, Callable, Any, OrderedDict
+from typing import Any, Callable, OrderedDict, Union
 
 import numpy as np
 import torch
 
-from xenonpy import __version__
-from xenonpy.model.training import Trainer, Checker
-from xenonpy.model.training.base import BaseExtension, BaseRunner
-
-__all__ = ['Persist']
+from shotgun_csp import __version__
+from shotgun_csp.model.training import Checker, Trainer
+from shotgun_csp.model.training.base import BaseExtension, BaseRunner
 
 
 class Persist(BaseExtension):
@@ -24,16 +22,18 @@ class Persist(BaseExtension):
     Trainer extension for data persistence
     """
 
-    def __init__(self,
-                 path: Union[Path, str] = None,
-                 *,
-                 model_class: Callable = None,
-                 model_params: Union[tuple, dict, any] = None,
-                 increment: bool = False,
-                 sync_training_step: bool = False,
-                 only_best_states: bool = False,
-                 no_model_saving: bool = False,
-                 **describe: Any):
+    def __init__(
+        self,
+        path: Union[Path, str] = None,
+        *,
+        model_class: Callable = None,
+        model_params: Union[tuple, dict, any] = None,
+        increment: bool = False,
+        sync_training_step: bool = False,
+        only_best_states: bool = False,
+        no_model_saving: bool = False,
+        **describe: Any,
+    ):
         """
 
         Parameters
@@ -77,7 +77,7 @@ class Persist(BaseExtension):
     @property
     def describe(self):
         if self._checker is None:
-            raise ValueError('can not access property `describe` before training')
+            raise ValueError("can not access property `describe` before training")
         return self._checker.describe
 
     @property
@@ -87,13 +87,13 @@ class Persist(BaseExtension):
     @property
     def path(self):
         if self._checker is None:
-            raise ValueError('can not access property `path` before training')
+            raise ValueError("can not access property `path` before training")
         return str(self._checker.path)
 
     @path.setter
     def path(self, path: Union[Path, str]):
         if self._checker is not None:
-            raise ValueError('can not reset property `path` after training')
+            raise ValueError("can not reset property `path` after training")
         self._path = path
 
     @property
@@ -107,23 +107,25 @@ class Persist(BaseExtension):
 
     def __call__(self, handle: Any = None, **kwargs: Any):
         if self._checker is None:
-            raise RuntimeError('calling of this method only after the model training')
+            raise RuntimeError("calling of this method only after the model training")
         self._checker(handle=handle, **kwargs)
 
     def __getitem__(self, item):
         return self._checker[item]
 
-    def on_checkpoint(self,
-                      checkpoint: Trainer.checkpoint_tuple,
-                      _trainer: BaseRunner = None,
-                      _is_training: bool = True,
-                      *_dependence: 'BaseExtension') -> None:
+    def on_checkpoint(
+        self,
+        checkpoint: Trainer.checkpoint_tuple,
+        _trainer: BaseRunner = None,
+        _is_training: bool = True,
+        *_dependence: "BaseExtension",
+    ) -> None:
         if self._no_model_saving:
             return None
         if self.only_best_states:
-            tmp = checkpoint.id.split('_')
-            if tmp[-1] == '1':
-                key = '_'.join(tmp[:-1])
+            tmp = checkpoint.id.split("_")
+            if tmp[-1] == "1":
+                key = "_".join(tmp[:-1])
                 value = deepcopy(checkpoint._asdict())
                 self._checker.set_checkpoint(**{key: value})
         else:
@@ -131,17 +133,19 @@ class Persist(BaseExtension):
             value = deepcopy(checkpoint._asdict())
             self._checker.set_checkpoint(**{key: value})
 
-    def step_forward(self,
-                     step_info: OrderedDict[Any, int],
-                     trainer: Trainer = None,
-                     _is_training: bool = True,
-                     *_dependence: BaseExtension) -> None:
+    def step_forward(
+        self,
+        step_info: OrderedDict[Any, int],
+        trainer: Trainer = None,
+        _is_training: bool = True,
+        *_dependence: BaseExtension,
+    ) -> None:
         if self.sync_training_step:
             training_info = trainer.training_info
             if training_info is not None:
                 self._checker(training_info=training_info)
         else:
-            epoch = step_info['i_epoch']
+            epoch = step_info["i_epoch"]
             if epoch > self._epoch_count:
                 training_info = trainer.training_info
                 if training_info is not None:
@@ -163,16 +167,18 @@ class Persist(BaseExtension):
             torch=torch.__version__,
             xenonpy=__version__,
             device=str(trainer.device),
-            start=datetime.now().strftime('%Y/%m/%d %H:%M:%S'),
-            finish='N/A',
-            time_elapsed='N/A',
+            start=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+            finish="N/A",
+            time_elapsed="N/A",
             **self._describe,
         )
         self._checker(describe=self._describe_)
 
-    def after_proc(self, trainer: Trainer = None, _is_training: bool = True, *_dependence: 'BaseExtension') -> None:
-        self._describe_.update(finish=datetime.now().strftime('%Y/%m/%d %H:%M:%S'),
-                               time_elapsed=str(timedelta(seconds=trainer.timer.elapsed)))
+    def after_proc(self, trainer: Trainer = None, _is_training: bool = True, *_dependence: "BaseExtension") -> None:
+        self._describe_.update(
+            finish=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+            time_elapsed=str(timedelta(seconds=trainer.timer.elapsed)),
+        )
         self._checker.final_state = trainer.model.state_dict()
         self._checker(
             training_info=trainer.training_info,

@@ -1,34 +1,33 @@
 #  Copyright (c) 2021. TsumiNa. All rights reserved.
 #  Use of this source code is governed by a BSD-style
 #  license that can be found in the LICENSE file.
-from typing import Union, Tuple, Any, Sequence
-from scipy.special import softmax
+from typing import Any, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import torch
+from scipy.special import softmax
 
-from xenonpy.model.training import Trainer
-from xenonpy.model.training.base import BaseExtension
-
-__all__ = ['TensorConverter']
+from shotgun_csp.model.training import Trainer
+from shotgun_csp.model.training.base import BaseExtension
 
 T_Data = Union[pd.DataFrame, pd.Series, np.ndarray, torch.Tensor]
 
 
 class TensorConverter(BaseExtension):
-
-    def __init__(self,
-                 *,
-                 x_dtype: Union[torch.dtype, Sequence[torch.dtype]] = None,
-                 y_dtype: Union[torch.dtype, Sequence[torch.dtype]] = None,
-                 empty_cache: bool = False,
-                 auto_reshape: bool = True,
-                 argmax: bool = False,
-                 probability: bool = False):
+    def __init__(
+        self,
+        *,
+        x_dtype: Union[torch.dtype, Sequence[torch.dtype]] = None,
+        y_dtype: Union[torch.dtype, Sequence[torch.dtype]] = None,
+        empty_cache: bool = False,
+        auto_reshape: bool = True,
+        argmax: bool = False,
+        probability: bool = False,
+    ):
         """
         Covert tensor like data into :class:`torch.Tensor` automatically.
-        
+
         Parameters
         ----------
         x_dtype
@@ -107,11 +106,26 @@ class TensorConverter(BaseExtension):
             return self._y_dtype[i]
         return self._y_dtype
 
-    def input_proc(self, x_in: Union[Sequence[Union[torch.Tensor, pd.DataFrame, pd.Series, np.ndarray, Any]],
-                                     torch.Tensor, pd.DataFrame, pd.Series, np.ndarray, Any],
-                   y_in: Union[Sequence[Union[torch.Tensor, pd.DataFrame, pd.Series, np.ndarray,
-                                              Any]], torch.Tensor, pd.DataFrame, pd.Series, np.ndarray,
-                               Any], trainer: Trainer) -> Tuple[torch.Tensor, torch.Tensor]:
+    def input_proc(
+        self,
+        x_in: Union[
+            Sequence[Union[torch.Tensor, pd.DataFrame, pd.Series, np.ndarray, Any]],
+            torch.Tensor,
+            pd.DataFrame,
+            pd.Series,
+            np.ndarray,
+            Any,
+        ],
+        y_in: Union[
+            Sequence[Union[torch.Tensor, pd.DataFrame, pd.Series, np.ndarray, Any]],
+            torch.Tensor,
+            pd.DataFrame,
+            pd.Series,
+            np.ndarray,
+            Any,
+        ],
+        trainer: Trainer,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Convert data to :class:`torch.Tensor`.
 

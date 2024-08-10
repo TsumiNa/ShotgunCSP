@@ -1,6 +1,6 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
+
 
 import warnings
 
@@ -8,16 +8,17 @@ import numpy as np
 import torch
 from pymatgen.core.structure import Structure
 
-from xenonpy.datatools import preset
-from xenonpy.descriptor.base import BaseFeaturizer
+from shotgun_csp.datatools import preset
 
-__all__ = ['CrystalGraphFeaturizer']
+from .base import BaseFeaturizer
+
+__all__ = ["CrystalGraphFeaturizer"]
 
 
 class CrystalGraphFeaturizer(BaseFeaturizer):
-
-    def __init__(self, *, max_num_nbr=12, radius=8, atom_feature='origin', n_jobs=-1, on_errors='raise',
-                 return_type='any'):
+    def __init__(
+        self, *, max_num_nbr=12, radius=8, atom_feature="origin", n_jobs=-1, on_errors="raise", return_type="any"
+    ):
         """
         This featurizer is a port of the original paper [CGCNN]_.
 
@@ -49,24 +50,24 @@ class CrystalGraphFeaturizer(BaseFeaturizer):
         self.atom_feature = atom_feature
         self.radius = radius
         self.max_num_nbr = max_num_nbr
-        self.__implement__ = ['TsumiNa']
+        self.__implement__ = ["TsumiNa"]
 
     def _atom_feature(self, atom_symbol: str):
-        if self.atom_feature == 'origin':
+        if self.atom_feature == "origin":
             return preset.atom_init.loc[atom_symbol]
-        elif self.atom_feature == 'elements':
+        elif self.atom_feature == "elements":
             return preset.elements_completed.loc[atom_symbol]
         elif callable(self.atom_feature):
             return self.atom_feature(atom_symbol)
         else:
-            raise TypeError('bad `atom feature` parameter')
+            raise TypeError("bad `atom feature` parameter")
 
     def edge_features(self, structure: Structure, **kwargs):
         def expand_distance(distances, dmin=0, step=0.2, var=None):
             """
             Parameters
             ----------
-    
+
             dmin: float
               Minimum interatomic distance
             dmax: float
@@ -78,26 +79,23 @@ class CrystalGraphFeaturizer(BaseFeaturizer):
             if var is None:
                 var = step
 
-            return np.exp(-(distances[..., np.newaxis] - filter_) ** 2 / var ** 2)
+            return np.exp(-((distances[..., np.newaxis] - filter_) ** 2) / var**2)
 
         all_nbrs = structure.get_all_neighbors(self.radius, include_index=True)
         all_nbrs = [sorted(nbrs, key=lambda x: x[1]) for nbrs in all_nbrs]
         nbr_fea_idx, nbr_fea = [], []
         for nbr in all_nbrs:
             if len(nbr) < self.max_num_nbr:
-                warnings.warn('can not find enough neighbors to build graph. '
-                              'If it happens frequently, consider increase '
-                              'radius.')
-                nbr_fea_idx.append(list(map(lambda x: x[2], nbr)) +
-                                   [0] * (self.max_num_nbr - len(nbr)))
-                nbr_fea.append(list(map(lambda x: x[1], nbr)) +
-                               [self.radius + 1.] * (self.max_num_nbr -
-                                                     len(nbr)))
+                warnings.warn(
+                    "can not find enough neighbors to build graph. "
+                    "If it happens frequently, consider increase "
+                    "radius."
+                )
+                nbr_fea_idx.append(list(map(lambda x: x[2], nbr)) + [0] * (self.max_num_nbr - len(nbr)))
+                nbr_fea.append(list(map(lambda x: x[1], nbr)) + [self.radius + 1.0] * (self.max_num_nbr - len(nbr)))
             else:
-                nbr_fea_idx.append(list(map(lambda x: x[2],
-                                            nbr[:self.max_num_nbr])))
-                nbr_fea.append(list(map(lambda x: x[1],
-                                        nbr[:self.max_num_nbr])))
+                nbr_fea_idx.append(list(map(lambda x: x[2], nbr[: self.max_num_nbr])))
+                nbr_fea.append(list(map(lambda x: x[1], nbr[: self.max_num_nbr])))
         nbr_fea = np.array(nbr_fea)
         nbr_fea = expand_distance(nbr_fea)
         nbr_fea = torch.Tensor(nbr_fea)
@@ -115,4 +113,4 @@ class CrystalGraphFeaturizer(BaseFeaturizer):
 
     @property
     def feature_labels(self):
-        return ['atom_feature', 'neighbor_feature', 'neighbor_idx']
+        return ["atom_feature", "neighbor_feature", "neighbor_idx"]

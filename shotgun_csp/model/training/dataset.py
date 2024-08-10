@@ -1,15 +1,43 @@
-#  Copyright (c) 2021. TsumiNa. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
 
-from typing import Union
+
+from typing import Sequence, Union
 
 import numpy as np
 import pandas as pd
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, TensorDataset
 
-__all__ = ['CrystalGraphDataset']
+
+class ArrayDataset(TensorDataset):
+    def __init__(
+        self,
+        *array: Union[np.ndarray, pd.DataFrame, pd.Series, torch.Tensor],
+        dtypes: Union[None, Sequence[torch.dtype]] = None,
+    ):
+        if dtypes is None:
+            dtypes = [torch.get_default_dtype()] * len(array)
+        if len(dtypes) != len(array):
+            raise ValueError("length of dtypes not equal to length of array")
+
+        array = [self._convert(data, dtype) for data, dtype in zip(array, dtypes)]
+        super().__init__(*array)
+
+    @staticmethod
+    def _convert(data, dtype):
+        if isinstance(data, torch.Tensor):
+            return data
+        if isinstance(data, (pd.DataFrame, pd.Series)):
+            data = data.values
+        if isinstance(data, np.ndarray):
+            data = torch.from_numpy(data)
+        if not isinstance(data, torch.Tensor):
+            raise RuntimeError(
+                "input must be pd.DataFrame, pd.Series, np.ndarray, or torch.Tensor but got %s" % data.__class__
+            )
+
+        return data.to(dtype)
 
 
 class CrystalGraphDataset(Dataset):
@@ -41,19 +69,20 @@ class CrystalGraphDataset(Dataset):
     cif_id: str or int
     """
 
-    def __init__(self, crystal_features: Union[pd.DataFrame, np.ndarray],
-                 targets: Union[pd.DataFrame, np.ndarray] = None):
+    def __init__(
+        self, crystal_features: Union[pd.DataFrame, np.ndarray], targets: Union[pd.DataFrame, np.ndarray] = None
+    ):
         if isinstance(crystal_features, pd.DataFrame):
             crystal_features = crystal_features.values
         if not isinstance(crystal_features, np.ndarray):
-            raise RuntimeError('<crystal_features> must be pd.DataFrame or np.ndarray')
+            raise RuntimeError("<crystal_features> must be pd.DataFrame or np.ndarray")
         self.crystal_features = crystal_features
 
         if targets is not None:
             if isinstance(targets, pd.DataFrame):
                 targets = targets.values
             if not isinstance(targets, np.ndarray):
-                raise RuntimeError('<targets> must be pd.DataFrame, pd.Series or np.ndarray')
+                raise RuntimeError("<targets> must be pd.DataFrame, pd.Series or np.ndarray")
         self.targets = targets
 
     def __len__(self):
@@ -118,17 +147,21 @@ class CrystalGraphDataset(Dataset):
                 _batch()
                 base_idx += n_i
                 batch_target.append(target)
-            return (torch.cat(batch_atom_fea, dim=0),
-                    torch.cat(batch_nbr_fea, dim=0),
-                    torch.cat(batch_nbr_fea_idx, dim=0),
-                    crystal_atom_idx), torch.stack(batch_target, dim=0)
+            return (
+                torch.cat(batch_atom_fea, dim=0),
+                torch.cat(batch_nbr_fea, dim=0),
+                torch.cat(batch_nbr_fea_idx, dim=0),
+                crystal_atom_idx,
+            ), torch.stack(batch_target, dim=0)
 
         else:
             for i, (atom_fea, nbr_fea, nbr_fea_idx) in enumerate(dataset_list):
                 n_i = atom_fea.shape[0]  # number of atoms for this crystal
                 _batch()
                 base_idx += n_i
-            return (torch.cat(batch_atom_fea, dim=0),
-                    torch.cat(batch_nbr_fea, dim=0),
-                    torch.cat(batch_nbr_fea_idx, dim=0),
-                    crystal_atom_idx)
+            return (
+                torch.cat(batch_atom_fea, dim=0),
+                torch.cat(batch_nbr_fea, dim=0),
+                torch.cat(batch_nbr_fea_idx, dim=0),
+                crystal_atom_idx,
+            )

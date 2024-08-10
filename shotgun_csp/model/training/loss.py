@@ -1,12 +1,46 @@
-#  Copyright (c) 2021. TsumiNa. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
 
 __all__ = [
-    'NLLLoss', 'NLLLoss2d', 'L1Loss', 'MSELoss', 'CrossEntropyLoss', 'CTCLoss', 'PoissonNLLLoss', 'KLDivLoss',
-    'BCELoss', 'BCEWithLogitsLoss', 'MarginRankingLoss', 'HingeEmbeddingLoss', 'MultiLabelMarginLoss', 'SmoothL1Loss',
-    'SoftMarginLoss', 'MultiLabelSoftMarginLoss', 'CosineEmbeddingLoss', 'MultiMarginLoss', 'TripletMarginLoss',
-    'TripletMarginWithDistanceLoss'
+    "NLLLoss",
+    "L1Loss",
+    "MSELoss",
+    "CrossEntropyLoss",
+    "CTCLoss",
+    "PoissonNLLLoss",
+    "KLDivLoss",
+    "BCELoss",
+    "BCEWithLogitsLoss",
+    "MarginRankingLoss",
+    "HingeEmbeddingLoss",
+    "MultiLabelMarginLoss",
+    "SmoothL1Loss",
+    "SoftMarginLoss",
+    "MultiLabelSoftMarginLoss",
+    "CosineEmbeddingLoss",
+    "MultiMarginLoss",
+    "TripletMarginLoss",
+    "TripletMarginWithDistanceLoss",
 ]
 
-from torch.nn.modules.loss import *
+from torch.nn.modules.loss import (
+    BCELoss,
+    BCEWithLogitsLoss,
+    CosineEmbeddingLoss,
+    CrossEntropyLoss,
+    CTCLoss,
+    HingeEmbeddingLoss,
+    KLDivLoss,
+    L1Loss,
+    MarginRankingLoss,
+    MSELoss,
+    MultiLabelMarginLoss,
+    MultiLabelSoftMarginLoss,
+    MultiMarginLoss,
+    NLLLoss,
+    PoissonNLLLoss,
+    SmoothL1Loss,
+    SoftMarginLoss,
+    TripletMarginLoss,
+    TripletMarginWithDistanceLoss,
+)

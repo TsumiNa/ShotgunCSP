@@ -1,6 +1,6 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
+
 
 import numpy as np
 import pandas as pd
@@ -8,10 +8,6 @@ from pandas import DataFrame, Series
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.preprocessing import PowerTransformer as PT
-
-from xenonpy.utils import Switch
-
-__all__ = ['PowerTransformer', 'Scaler']
 
 
 class PowerTransformer(BaseEstimator, TransformerMixin):
@@ -23,13 +19,7 @@ class PowerTransformer(BaseEstimator, TransformerMixin):
     Journal of the Royal Statistical Society B, 26, 211-252 (1964).
     """
 
-    def __init__(self,
-                 *,
-                 method='yeo-johnson',
-                 standardize=False,
-                 lmd=None,
-                 tolerance=(-np.inf, np.inf),
-                 on_err=None):
+    def __init__(self, *, method="yeo-johnson", standardize=False, lmd=None, tolerance=(-np.inf, np.inf), on_err=None):
         """
 
         Parameters
@@ -69,8 +59,10 @@ class PowerTransformer(BaseEstimator, TransformerMixin):
             x = x.values
         if not isinstance(x, np.ndarray):
             raise TypeError(
-                'parameter `X` should be a `DataFrame`, `Series`, `ndarray` or list object '
-                'but got {}'.format(type(x)))
+                "parameter `X` should be a `DataFrame`, `Series`, `ndarray` or list object " "but got {}".format(
+                    type(x)
+                )
+            )
         if len(x.shape) == 1:
             x = x.reshape(-1, 1)
         return x
@@ -100,15 +92,14 @@ class PowerTransformer(BaseEstimator, TransformerMixin):
             if isinstance(self._lmd, float):
                 self._pt.lambdas_ = np.array([self._lmd] * x.shape[1])
             elif x.shape[1] != len(self._lmd):
-                raise ValueError('shape[1] of parameter `X` should be {} but got {}'.format(
-                    x.shape[1], len(self._lmd)))
+                raise ValueError("shape[1] of parameter `X` should be {} but got {}".format(x.shape[1], len(self._lmd)))
             else:
                 self._pt.lambdas_ = np.array(self._lmd)
         else:
             self._pt.fit(x)
 
         if len(idx) > 0:
-            self._pt.lambdas_[idx] = 1.
+            self._pt.lambdas_[idx] = 1.0
 
         return self
 
@@ -145,10 +136,10 @@ class Scaler(BaseEstimator, TransformerMixin):
         return self._scale(PowerTransformer, *args, **kwargs)
 
     def box_cox(self, *args, **kwargs):
-        return self._scale(PowerTransformer, method='box-cox', *args, **kwargs)
+        return self._scale(PowerTransformer, method="box-cox", *args, **kwargs)
 
     def yeo_johnson(self, *args, **kwargs):
-        return self._scale(PowerTransformer, method='yeo-johnson', *args, **kwargs)
+        return self._scale(PowerTransformer, method="yeo-johnson", *args, **kwargs)
 
     def min_max(self, *args, **kwargs):
         return self._scale(MinMaxScaler, *args, **kwargs)
@@ -157,7 +148,7 @@ class Scaler(BaseEstimator, TransformerMixin):
         return self._scale(StandardScaler, *args, **kwargs)
 
     def log(self):
-        return self._scale(PowerTransformer, method='box-cox', lmd=0.)
+        return self._scale(PowerTransformer, method="box-cox", lmd=0.0)
 
     def _scale(self, scaler, *args, **kwargs):
         self._scalers.append(scaler(*args, **kwargs))

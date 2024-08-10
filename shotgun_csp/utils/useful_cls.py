@@ -1,6 +1,6 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
+
 
 import time
 import types
@@ -8,7 +8,7 @@ from collections import defaultdict
 from datetime import timedelta
 from functools import wraps
 
-__all__ = ['Switch', 'TimedMetaClass', 'Timer', 'Singleton']
+__all__ = ["Switch", "TimedMetaClass", "Timer", "Singleton"]
 
 
 class Switch(object):
@@ -47,36 +47,36 @@ class Timer(object):
             return all_ + dt
 
         def __repr__(self):
-            return f'elapsed: {timedelta(seconds=self.elapsed)} <seconds>'
+            return f"elapsed: {timedelta(seconds=self.elapsed)} <seconds>"
 
     def __init__(self, time_func=time.perf_counter):
         self._func = time_func
         self._timers = defaultdict(self._Timer)
 
-    def start(self, fn_name='main'):
+    def start(self, fn_name="main"):
         if self._timers[fn_name].start is not None:
-            raise RuntimeError('Timer <%s> Already started' % fn_name)
+            raise RuntimeError("Timer <%s> Already started" % fn_name)
         self._timers[fn_name].start = self._func()
 
-    def stop(self, fn_name='main'):
+    def stop(self, fn_name="main"):
         if self._timers[fn_name].start is None:
-            raise RuntimeError('Timer <%s> not started' % fn_name)
+            raise RuntimeError("Timer <%s> not started" % fn_name)
         elapsed = self._func() - self._timers[fn_name].start
         self._timers[fn_name].times.append(elapsed)
         self._timers[fn_name].start = None
 
     @property
     def elapsed(self):
-        if 'main' in self._timers:
-            return self._timers['main'].elapsed
+        if "main" in self._timers:
+            return self._timers["main"].elapsed
         return sum([v.elapsed for v in self._timers.values()])
 
     def __repr__(self):
         tmp = {k: v.elapsed for k, v in self._timers.items()}
         tmp = {k: v for k, v in sorted(tmp.items(), key=lambda t: t[1])}
-        return f'Total elapsed: {timedelta(seconds=self.elapsed)} <seconds>\n' + \
-               '\n'.join([f'  |- {k}: {timedelta(seconds=v)}' for k, v in
-                          sorted(tmp.items(), key=lambda t: t[1], reverse=True)])
+        return f"Total elapsed: {timedelta(seconds=self.elapsed)} <seconds>\n" + "\n".join(
+            [f"  |- {k}: {timedelta(seconds=v)}" for k, v in sorted(tmp.items(), key=lambda t: t[1], reverse=True)]
+        )
 
     def __enter__(self):
         self.start()
@@ -95,6 +95,7 @@ class TimedMetaClass(type):
     @staticmethod
     def _timed(fn):
         if isinstance(fn, (types.FunctionType, types.MethodType)):
+
             @wraps(fn)
             def fn_(self, *args, **kwargs):
                 self._timer.start(fn.__name__)
@@ -105,25 +106,26 @@ class TimedMetaClass(type):
                 return rt
 
             return fn_
-        raise TypeError('Need <FunctionType> or <MethodType> but got %s' % type(fn))
+        raise TypeError("Need <FunctionType> or <MethodType> but got %s" % type(fn))
 
     def __new__(mcs, name, bases, attrs):
-
-        if '__init__' in attrs:
-            real_init = attrs['__init__']
+        if "__init__" in attrs:
+            real_init = attrs["__init__"]
 
             # we do a deepcopy in case default is mutable
             # but beware, this might not always work
             @wraps(real_init)
             def injected_init(self, *args, **kwargs):
-                setattr(self, '_timer', Timer())
+                setattr(self, "_timer", Timer())
                 # call the "real" __init__ that we hid with our injected one
                 real_init(self, *args, **kwargs)
         else:
+
             def injected_init(self):
-                setattr(self, '_timer', Timer())
+                setattr(self, "_timer", Timer())
+
         # inject it
-        attrs['__init__'] = injected_init
+        attrs["__init__"] = injected_init
 
         for name_, value_ in attrs.items():
             if not name_.startswith("__") and isinstance(value_, (types.FunctionType, types.MethodType)):

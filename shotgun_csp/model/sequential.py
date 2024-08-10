@@ -1,13 +1,12 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
 
 import math
-from typing import Union, Sequence, Callable, Any, Optional
+from typing import Any, Callable, Optional, Sequence, Union
 
 from torch import nn
 
-__all__ = ['LinearLayer', 'SequentialLinear']
+__all__ = ["LinearLayer", "SequentialLinear"]
 
 
 class LinearLayer(nn.Module):
@@ -16,14 +15,16 @@ class LinearLayer(nn.Module):
     See here for details: http://pytorch.org/docs/master/nn.html#
     """
 
-    def __init__(self,
-                 in_features: int,
-                 out_features: int,
-                 *,
-                 bias: bool = True,
-                 dropout: float = 0.,
-                 activation_func: Callable = nn.ReLU(),
-                 normalizer: Union[float, None] = .1):
+    def __init__(
+        self,
+        in_features: int,
+        out_features: int,
+        *,
+        bias: bool = True,
+        dropout: float = 0.0,
+        activation_func: Callable = nn.ReLU(),
+        normalizer: Union[float, None] = 0.1,
+    ):
         """
         Parameters
         ----------
@@ -66,16 +67,16 @@ class SequentialLinear(nn.Module):
     """
 
     def __init__(
-            self,
-            in_features: int,
-            out_features: int,
-            bias: bool = True,
-            *,
-            h_neurons: Union[Sequence[float], Sequence[int]] = (),
-            h_bias: Union[bool, Sequence[bool]] = True,
-            h_dropouts: Union[float, Sequence[float]] = 0.0,
-            h_normalizers: Union[float, None, Sequence[Optional[float]]] = 0.1,
-            h_activation_funcs: Union[Callable, None, Sequence[Optional[Callable]]] = nn.ReLU(),
+        self,
+        in_features: int,
+        out_features: int,
+        bias: bool = True,
+        *,
+        h_neurons: Union[Sequence[float], Sequence[int]] = (),
+        h_bias: Union[bool, Sequence[bool]] = True,
+        h_dropouts: Union[float, Sequence[float]] = 0.0,
+        h_normalizers: Union[float, None, Sequence[Optional[float]]] = 0.1,
+        h_activation_funcs: Union[Callable, None, Sequence[Optional[Callable]]] = nn.ReLU(),
     ):
         """
 
@@ -114,7 +115,7 @@ class SequentialLinear(nn.Module):
             elif isinstance(h_neurons[0], int):
                 neurons = (in_features,) + tuple(h_neurons)
             else:
-                raise RuntimeError('illegal parameter type of <h_neurons>')
+                raise RuntimeError("illegal parameter type of <h_neurons>")
 
             activation_funcs = self._check_input(h_activation_funcs)
             normalizers = self._check_input(h_normalizers)
@@ -123,13 +124,17 @@ class SequentialLinear(nn.Module):
 
             for i in range(self._h_layers):
                 setattr(
-                    self, f'layer_{i}',
-                    LinearLayer(in_features=neurons[i],
-                                out_features=neurons[i + 1],
-                                bias=bias[i],
-                                dropout=dropouts[i],
-                                activation_func=activation_funcs[i],
-                                normalizer=normalizers[i]))
+                    self,
+                    f"layer_{i}",
+                    LinearLayer(
+                        in_features=neurons[i],
+                        out_features=neurons[i + 1],
+                        bias=bias[i],
+                        dropout=dropouts[i],
+                        activation_func=activation_funcs[i],
+                        normalizer=normalizers[i],
+                    ),
+                )
 
             self.output = nn.Linear(neurons[-1], out_features, bias[-1])
         else:
@@ -138,13 +143,15 @@ class SequentialLinear(nn.Module):
     def _check_input(self, i):
         if isinstance(i, Sequence):
             if len(i) != self._h_layers:
-                raise RuntimeError(f'number of parameter not consistent with number of layers, '
-                                   f'input is {len(i)} but need to be {self._h_layers}')
+                raise RuntimeError(
+                    f"number of parameter not consistent with number of layers, "
+                    f"input is {len(i)} but need to be {self._h_layers}"
+                )
             return tuple(i)
         else:
             return tuple([i] * self._h_layers)
 
     def forward(self, x: Any) -> Any:
         for i in range(self._h_layers):
-            x = getattr(self, f'layer_{i}')(x)
+            x = getattr(self, f"layer_{i}")(x)
         return self.output(x)

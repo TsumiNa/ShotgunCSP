@@ -1,23 +1,23 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
 
+
+import itertools
+import warnings
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from collections.abc import Iterable
-import itertools
-import warnings
 from multiprocessing import cpu_count
-from typing import DefaultDict, List, Sequence, Union, Set
-from joblib import Parallel, delayed
+from typing import DefaultDict, List, Sequence, Set, Union
 
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
 from pymatgen.core.composition import Composition as PMGComp
-from sklearn.base import TransformerMixin, BaseEstimator
+from sklearn.base import BaseEstimator, TransformerMixin
 
-from xenonpy.datatools.preset import preset
-from xenonpy.utils import TimedMetaClass, Switch
+from shotgun_csp.datatools.preset import preset
+from shotgun_csp.utils import Switch, TimedMetaClass
 
 
 class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
@@ -82,15 +82,15 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
 
     """
 
-    __authors__ = ['anonymous']
-    __citations__ = ['No citations']
+    __authors__ = ["anonymous"]
+    __citations__ = ["No citations"]
 
     def __init__(
         self,
         n_jobs: int = -1,
         *,
-        on_errors: str = 'raise',
-        return_type: str = 'any',
+        on_errors: str = "raise",
+        return_type: str = "any",
         target_col: Union[List[str], str, None] = None,
         parallel_verbose: int = 0,
     ):
@@ -138,8 +138,8 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
 
     @return_type.setter
     def return_type(self, val):
-        if val not in {'any', 'array', 'df', 'custom'}:
-            raise ValueError('`return_type` must be `any`, `custom`, `array` or `df`')
+        if val not in {"any", "array", "df", "custom"}:
+            raise ValueError("`return_type` must be `any`, `custom`, `array` or `df`")
         self._return_type = val
 
     @property
@@ -148,8 +148,8 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
 
     @on_errors.setter
     def on_errors(self, val):
-        if val not in {'nan', 'keep', 'raise'}:
-            raise ValueError('`on_errors` must be `nan`, `keep` or `raise`')
+        if val not in {"nan", "keep", "raise"}:
+            raise ValueError("`on_errors` must be `nan`, `keep` or `raise`")
         self._on_errors = val
 
     @property
@@ -159,7 +159,7 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
     @parallel_verbose.setter
     def parallel_verbose(self, val):
         if not isinstance(val, int):
-            raise ValueError('`parallel_verbose` must be int')
+            raise ValueError("`parallel_verbose` must be int")
         self._parallel_verbose = val
 
     @property
@@ -168,7 +168,7 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
 
     @n_jobs.setter
     def n_jobs(self, n_jobs):
-        """Set the number of threads for this """
+        """Set the number of threads for this"""
         if n_jobs < -1:
             n_jobs = -1
         if n_jobs > cpu_count() or n_jobs == -1:
@@ -182,7 +182,7 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
             X - [list of tuples], training data
         Returns:
             self
-            """
+        """
         return self
 
     # todo: Dose fit_transform need to pass paras to transform?
@@ -220,7 +220,7 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
         Featurize a list of entries.
         If `featurize` takes multiple inputs, supply inputs as a list of tuples,
         or use pd.DataFrame with parameter ``target_col`` to specify the column name(s).
-        
+
         Args
         ----
         entries: list-like or pd.DataFrame
@@ -266,12 +266,12 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
             entries = entries[target_col]
 
         # Special case: Empty list
-        if len(entries) is 0:
+        if len(entries) == 0:
             return []
 
         # Check outputs
-        if return_type not in {None, 'any', 'array', 'df', 'custom'}:
-            raise ValueError('`return_type` must be None, `any`, `custom`, `array` or `df`')
+        if return_type not in {None, "any", "array", "df", "custom"}:
+            raise ValueError("`return_type` must be None, `any`, `custom`, `array` or `df`")
 
         for c in Switch(self._n_jobs):
             if c(0):
@@ -279,14 +279,17 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
                 ret = self.featurize(entries, **kwargs)
                 break
             if isinstance(entries, pd.DataFrame):
-                raise RuntimeError("Auto-parallel can not be used when`entries` is `pandas.DataFrame`. "
-                                   "Please set `n_jobs` to 0 and implements your algorithm in the `featurize` method")
+                raise RuntimeError(
+                    "Auto-parallel can not be used when`entries` is `pandas.DataFrame`. "
+                    "Please set `n_jobs` to 0 and implements your algorithm in the `featurize` method"
+                )
             if c(1):
                 ret = [self._wrapper(x) for x in entries]
                 break
             if c():
-                ret = Parallel(n_jobs=self._n_jobs,
-                               verbose=self._parallel_verbose)(delayed(self._wrapper)(x) for x in entries)
+                ret = Parallel(n_jobs=self._n_jobs, verbose=self._parallel_verbose)(
+                    delayed(self._wrapper)(x) for x in entries
+                )
 
         try:
             labels = self.feature_labels
@@ -296,7 +299,7 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
         if return_type is None:
             return_type = self.return_type
 
-        if return_type == 'any':
+        if return_type == "any":
             if isinstance(entries, (pd.Series, pd.DataFrame)):
                 tmp = pd.DataFrame(ret, index=entries.index, columns=labels)
                 return tmp
@@ -304,15 +307,15 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
                 return np.array(ret)
             return ret
 
-        if return_type == 'array':
+        if return_type == "array":
             return np.array(ret)
 
-        if return_type == 'df':
+        if return_type == "df":
             if isinstance(entries, (pd.Series, pd.DataFrame)):
                 return pd.DataFrame(ret, index=entries.index, columns=labels)
             return pd.DataFrame(ret, columns=labels)
 
-        if return_type == 'custom':
+        if return_type == "custom":
             return ret
 
     def _wrapper(self, x):
@@ -331,9 +334,9 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
                 return self.featurize(x, **self._kwargs)
             return self.featurize(*x, **self._kwargs)
         except Exception as e:
-            if self._on_errors == 'nan':
+            if self._on_errors == "nan":
                 return [np.nan] * len(self.feature_labels)
-            elif self._on_errors == 'keep':
+            elif self._on_errors == "keep":
                 return [e] * len(self.feature_labels)
             else:
                 raise e
@@ -372,7 +375,7 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
             (list) each element should be a string citation,
                 ideally in BibTeX format.
         """
-        return '\n'.join(self.__citations__)
+        return "\n".join(self.__citations__)
 
     @property
     def authors(self):
@@ -385,7 +388,7 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
                 Jain", "email": "ajain@lbl.gov", "institution": "LBNL"}).
         """
 
-        return '\n'.join(self.__authors__)
+        return "\n".join(self.__authors__)
 
 
 class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
@@ -412,7 +415,7 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
 
     """
 
-    def __init__(self, *, featurizers: Union[List[str], str] = 'all', on_errors: str = 'raise'):
+    def __init__(self, *, featurizers: Union[List[str], str] = "all", on_errors: str = "raise"):
         """
 
         Parameters
@@ -438,8 +441,8 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
 
     @on_errors.setter
     def on_errors(self, val):
-        if val not in {'nan', 'keep', 'raise'}:
-            raise ValueError('`on_errors` must be `nan`, `keep` or `raise`')
+        if val not in {"nan", "keep", "raise"}:
+            raise ValueError("`on_errors` must be `nan`, `keep` or `raise`")
         self._on_errors = val
         for fea_set in self.__featurizer_sets__.values():
             for fea in fea_set:
@@ -452,41 +455,45 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
     @featurizers.setter
     def featurizers(self, val):
         if isinstance(val, str):
-            if val != 'all':
+            if val != "all":
                 self._featurizers = (val,)
             else:
                 self._featurizers = val
         elif isinstance(val, (tuple, List)):
             self._featurizers = tuple(val)
         else:
-            raise ValueError('parameter `featurizers` must be `all`, name of featurizer, or list of name of featurizer')
+            raise ValueError("parameter `featurizers` must be `all`, name of featurizer, or list of name of featurizer")
 
     @property
     def elapsed(self):
         return self._timer.elapsed
 
     def __setattr__(self, key, value):
-
-        if key == '__featurizer_sets__':
+        if key == "__featurizer_sets__":
             if not isinstance(value, defaultdict):
                 raise RuntimeError('Can not set "self.__featurizer_sets__" by yourself')
             super().__setattr__(key, value)
         if isinstance(value, BaseFeaturizer):
             if value.__class__.__name__ in self.__featurizers__:
-                raise RuntimeError('Duplicated featurizer <%s>' % value.__class__.__name__)
+                raise RuntimeError("Duplicated featurizer <%s>" % value.__class__.__name__)
             self.__featurizer_sets__[key].append(value)
             self.__featurizers__.add(value.__class__.__name__)
         else:
             super().__setattr__(key, value)
 
     def __repr__(self):
-        return self.__class__.__name__ + ':\n' + \
-               '\n'.join(
-                   ['  |- %s:\n  |  |- %s' % (k, '\n  |  |- '.join(map(lambda s: s.__class__.__name__, v))) for k, v in
-                    self.__featurizer_sets__.items()])
+        return (
+            self.__class__.__name__
+            + ":\n"
+            + "\n".join(
+                [
+                    "  |- %s:\n  |  |- %s" % (k, "\n  |  |- ".join(map(lambda s: s.__class__.__name__, v)))
+                    for k, v in self.__featurizer_sets__.items()
+                ]
+            )
+        )
 
     def _check_input(self, X, y=None, **kwargs):
-
         def _reformat(x):
             if x is None:
                 return x
@@ -511,14 +518,18 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
                 if set(keys).isdisjoint(tmp):
                     # raise KeyError('name of columns do not match any feature set')
                     warnings.warn(
-                        'name of columns do not match any feature set, '
-                        'the whole dataframe is applied to all feature sets', UserWarning)
+                        "name of columns do not match any feature set, "
+                        "the whole dataframe is applied to all feature sets",
+                        UserWarning,
+                    )
                     # allow type check later for this special case
                     return [x]
                 return x
 
-            raise TypeError('you can not ues a array-like input '
-                            'because there are multiple feature sets or the dim of input is not 1')
+            raise TypeError(
+                "you can not ues a array-like input "
+                "because there are multiple feature sets or the dim of input is not 1"
+            )
 
         return _reformat(X), _reformat(y)
 
@@ -542,7 +553,7 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
         if isinstance(X, list):
             for k, features in self.__featurizer_sets__.items():
                 for f in features:
-                    if self._featurizers != 'all' and f.__class__.__name__ not in self._featurizers:
+                    if self._featurizers != "all" and f.__class__.__name__ not in self._featurizers:
                         continue
                     # assume y is in same format of X
                     if y is not None:
@@ -553,7 +564,7 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
             for k, features in self.__featurizer_sets__.items():
                 if k in X:
                     for f in features:
-                        if self._featurizers != 'all' and f.__class__.__name__ not in self._featurizers:
+                        if self._featurizers != "all" and f.__class__.__name__ not in self._featurizers:
                             continue
                         if y is not None and k in y:
                             f.fit(X[k], y[k], **kwargs)
@@ -566,11 +577,11 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
         if not isinstance(X, Iterable):
             raise TypeError('parameter "entries" must be a iterable object')
 
-        if len(X) is 0:
+        if len(X) == 0:
             return None
 
-        if 'return_type' in kwargs:
-            del kwargs['return_type']
+        if "return_type" in kwargs:
+            del kwargs["return_type"]
 
         results = []
 
@@ -580,9 +591,9 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
                 # if k in kwargs:
                 #     k = kwargs[k]
                 for f in features:
-                    if self._featurizers != 'all' and f.__class__.__name__ not in self._featurizers:
+                    if self._featurizers != "all" and f.__class__.__name__ not in self._featurizers:
                         continue
-                    ret = f.transform(X[0], return_type='df', **kwargs)
+                    ret = f.transform(X[0], return_type="df", **kwargs)
                     results.append(ret)
         else:
             for k, features in self.__featurizer_sets__.items():
@@ -590,9 +601,9 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
                     k = kwargs[k]
                 if k in X:
                     for f in features:
-                        if self._featurizers != 'all' and f.__class__.__name__ not in self._featurizers:
+                        if self._featurizers != "all" and f.__class__.__name__ not in self._featurizers:
                             continue
-                        ret = f.transform(X[k], return_type='df', **kwargs)
+                        ret = f.transform(X[k], return_type="df", **kwargs)
                         results.append(ret)
 
         return pd.concat(results, axis=1)
@@ -618,14 +629,15 @@ class BaseDescriptor(BaseEstimator, TransformerMixin, metaclass=TimedMetaClass):
 
 
 class BaseCompositionFeaturizer(BaseFeaturizer, metaclass=ABCMeta):
-
-    def __init__(self,
-                 *,
-                 elemental_info: Union[pd.DataFrame, None] = None,
-                 n_jobs: int = -1,
-                 on_errors: str = 'raise',
-                 return_type: str = 'any',
-                 target_col: Union[List[str], str, None] = None):
+    def __init__(
+        self,
+        *,
+        elemental_info: Union[pd.DataFrame, None] = None,
+        n_jobs: int = -1,
+        on_errors: str = "raise",
+        return_type: str = "any",
+        target_col: Union[List[str], str, None] = None,
+    ):
         """
         Base class for composition feature.
         """
@@ -636,8 +648,7 @@ class BaseCompositionFeaturizer(BaseFeaturizer, metaclass=ABCMeta):
             self.elements = preset.elements_completed.copy()
         else:
             self.elements = elemental_info
-        self.__authors__ = ['TsumiNa']
-
+        self.__authors__ = ["TsumiNa"]
 
     def featurize(self, comp):
         elems_, nums_ = [], []

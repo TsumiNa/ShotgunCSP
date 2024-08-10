@@ -1,15 +1,15 @@
-#  Copyright (c) 2021. TsumiNa. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
+
+
 from torch.optim import lr_scheduler
 
-from xenonpy.model.training.base import BaseLRScheduler
+from shotgun_csp.model.training.base import BaseLRScheduler
 
-__all__ = ['LambdaLR', 'StepLR', 'MultiStepLR', 'ExponentialLR', 'CosineAnnealingLR', 'ReduceLROnPlateau', 'CyclicLR']
+__all__ = ["LambdaLR", "StepLR", "MultiStepLR", "ExponentialLR", "CosineAnnealingLR", "ReduceLROnPlateau", "CyclicLR"]
 
 
 class LambdaLR(BaseLRScheduler):
-
     def __init__(self, *, lr_lambda, last_epoch=-1):
         """Sets the learning rate of each parameter group to the initial lr
         times a given function. When last_epoch=-1, sets initial lr as lr.
@@ -35,7 +35,6 @@ class LambdaLR(BaseLRScheduler):
 
 
 class StepLR(BaseLRScheduler):
-
     def __init__(self, *, step_size, gamma=0.1, last_epoch=-1):
         """Decays the learning rate of each parameter group by gamma every
         step_size epochs. Notice that such decay can happen simultaneously with
@@ -65,7 +64,6 @@ class StepLR(BaseLRScheduler):
 
 
 class MultiStepLR(BaseLRScheduler):
-
     def __init__(self, *, milestones, gamma=0.1, last_epoch=-1):
         """Decays the learning rate of each parameter group by gamma once the
         number of epoch reaches one of the milestones. Notice that such decay can
@@ -94,7 +92,6 @@ class MultiStepLR(BaseLRScheduler):
 
 
 class ExponentialLR(BaseLRScheduler):
-
     def __init__(self, *, gamma, last_epoch=-1):
         """Decays the learning rate of each parameter group by gamma every epoch.
         When last_epoch=-1, sets initial lr as lr.
@@ -107,7 +104,6 @@ class ExponentialLR(BaseLRScheduler):
 
 
 class CosineAnnealingLR(BaseLRScheduler):
-
     def __init__(self, *, T_max, eta_min=0, last_epoch=-1):
         r"""Set the learning rate of each parameter group using a cosine annealing
         schedule, where :math:`\eta_{max}` is set to the initial lr and
@@ -146,18 +142,19 @@ class CosineAnnealingLR(BaseLRScheduler):
 
 
 class ReduceLROnPlateau(BaseLRScheduler):
-
-    def __init__(self,
-                 *,
-                 mode='min',
-                 factor=0.1,
-                 patience=10,
-                 verbose=False,
-                 threshold=1e-4,
-                 threshold_mode='rel',
-                 cooldown=0,
-                 min_lr=0,
-                 eps=1e-8):
+    def __init__(
+        self,
+        *,
+        mode="min",
+        factor=0.1,
+        patience=10,
+        verbose=False,
+        threshold=1e-4,
+        threshold_mode="rel",
+        cooldown=0,
+        min_lr=0,
+        eps=1e-8,
+    ):
         """Reduce learning rate when a metric has stopped improving.
         Models often benefit from reducing the learning rate by a factor
         of 2-10 once learning stagnates. This scheduler reads a metrics
@@ -196,34 +193,37 @@ class ReduceLROnPlateau(BaseLRScheduler):
                 ignored. Default: 1e-8.
 
         """
-        super().__init__(lr_scheduler.ReduceLROnPlateau,
-                         mode=mode,
-                         factor=factor,
-                         patience=patience,
-                         verbose=verbose,
-                         threshold=threshold,
-                         threshold_mode=threshold_mode,
-                         cooldown=cooldown,
-                         min_lr=min_lr,
-                         eps=eps)
+        super().__init__(
+            lr_scheduler.ReduceLROnPlateau,
+            mode=mode,
+            factor=factor,
+            patience=patience,
+            verbose=verbose,
+            threshold=threshold,
+            threshold_mode=threshold_mode,
+            cooldown=cooldown,
+            min_lr=min_lr,
+            eps=eps,
+        )
 
 
 class CyclicLR(BaseLRScheduler):
-
-    def __init__(self,
-                 *,
-                 base_lr,
-                 max_lr,
-                 step_size_up=2000,
-                 step_size_down=None,
-                 mode='triangular',
-                 gamma=1.,
-                 scale_fn=None,
-                 scale_mode='cycle',
-                 cycle_momentum=True,
-                 base_momentum=0.8,
-                 max_momentum=0.9,
-                 last_epoch=-1):
+    def __init__(
+        self,
+        *,
+        base_lr,
+        max_lr,
+        step_size_up=2000,
+        step_size_down=None,
+        mode="triangular",
+        gamma=1.0,
+        scale_fn=None,
+        scale_mode="cycle",
+        cycle_momentum=True,
+        base_momentum=0.8,
+        max_momentum=0.9,
+        last_epoch=-1,
+    ):
         """Sets the learning rate of each parameter group according to
         cyclical learning rate policy (CLR). The policy cycles the learning
         rate between two boundaries with a constant frequency, as detailed in
@@ -302,16 +302,18 @@ class CyclicLR(BaseLRScheduler):
         .. _Cyclical Learning Rates for Training Neural Networks: https://arxiv.org/abs/1506.01186
         .. _bckenstler/CLR: https://github.com/bckenstler/CLR
         """
-        super().__init__(lr_scheduler.CyclicLR,
-                         base_lr=base_lr,
-                         max_lr=max_lr,
-                         step_size_up=step_size_up,
-                         step_size_down=step_size_down,
-                         mode=mode,
-                         gamma=gamma,
-                         scale_fn=scale_fn,
-                         scale_mode=scale_mode,
-                         cycle_momentum=cycle_momentum,
-                         base_momentum=base_momentum,
-                         max_momentum=max_momentum,
-                         last_epoch=last_epoch)
+        super().__init__(
+            lr_scheduler.CyclicLR,
+            base_lr=base_lr,
+            max_lr=max_lr,
+            step_size_up=step_size_up,
+            step_size_down=step_size_down,
+            mode=mode,
+            gamma=gamma,
+            scale_fn=scale_fn,
+            scale_mode=scale_mode,
+            cycle_momentum=cycle_momentum,
+            base_momentum=base_momentum,
+            max_momentum=max_momentum,
+            last_epoch=last_epoch,
+        )

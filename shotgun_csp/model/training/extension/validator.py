@@ -1,16 +1,14 @@
 #  Copyright (c) 2021. TsumiNa. All rights reserved.
 #  Use of this source code is governed by a BSD-style
 #  license that can be found in the LICENSE file.
+from collections import OrderedDict
+from typing import Any, Callable, Dict, Union
+
 import numpy as np
 
-from collections import OrderedDict
-from typing import Callable, Any, Dict, Union
-
-from xenonpy.model.utils import regression_metrics, classification_metrics
-from xenonpy.model.training import Trainer
-from xenonpy.model.training.base import BaseExtension
-
-__all__ = ['Validator']
+from shotgun_csp.model.training import Trainer
+from shotgun_csp.model.training.base import BaseExtension
+from shotgun_csp.model.utils import classification_metrics, regression_metrics
 
 
 class Validator(BaseExtension):
@@ -18,17 +16,19 @@ class Validator(BaseExtension):
     Validator extension
     """
 
-    regress = 'regress'
-    classify = 'classify'
+    regress = "regress"
+    classify = "classify"
 
-    def __init__(self,
-                 metrics_func: Union[str, Callable[[Any, Any], Dict]],
-                 *,
-                 each_iteration: bool = True,
-                 early_stopping: int = None,
-                 trace_order: int = 1,
-                 warming_up: int = 0,
-                 **trace_criteria: Dict[str, float]):
+    def __init__(
+        self,
+        metrics_func: Union[str, Callable[[Any, Any], Dict]],
+        *,
+        each_iteration: bool = True,
+        early_stopping: int = None,
+        trace_order: int = 1,
+        warming_up: int = 0,
+        **trace_criteria: Dict[str, float],
+    ):
         """
 
         Parameters
@@ -56,9 +56,9 @@ class Validator(BaseExtension):
             Should follow this formation: ``criterion=target``, e.g ``mae=0, corr=1``.
             The names of criteria must be consistent with the output of``metrics_func``.
         """
-        if metrics_func == 'regress':
+        if metrics_func == "regress":
             self.metrics_func = regression_metrics
-        elif metrics_func == 'classify':
+        elif metrics_func == "classify":
             self.metrics_func = classification_metrics
         else:
             self.metrics_func = metrics_func
@@ -102,10 +102,9 @@ class Validator(BaseExtension):
         if x_val is None and y_val is None and val_dataset is not None:
             self.from_dataset = True
         elif x_val is None or y_val is None:
-            raise RuntimeError('no data for validation')
+            raise RuntimeError("no data for validation")
 
     def step_forward(self, trainer: Trainer, step_info: OrderedDict) -> None:
-
         def _validate():
             if self.from_dataset:
                 y_preds, y_trues = trainer.predict(dataset=trainer.validate_dataset)
@@ -121,7 +120,7 @@ class Validator(BaseExtension):
             for name, (target, current) in self.trace.items():
                 if name in metrics:
                     score = np.abs(metrics[name] - target)
-                    if score < current[-1] and step_info['i_epoch'] >= self._warming_up:
+                    if score < current[-1] and step_info["i_epoch"] >= self._warming_up:
                         current.append(score)
                         current.sort()
                         current.pop()
@@ -131,21 +130,22 @@ class Validator(BaseExtension):
                         else:
                             index = current.index(score) + 1
                             for i in range(self.order, index, -1):
-                                if f'{name}_{i - 1}' in trainer.checkpoints:
-                                    trainer.checkpoints[f'{name}_{i}'] = trainer.checkpoints[f'{name}_{i - 1}']
-                            trainer.set_checkpoint(f'{name}_{index}')
+                                if f"{name}_{i - 1}" in trainer.checkpoints:
+                                    trainer.checkpoints[f"{name}_{i}"] = trainer.checkpoints[f"{name}_{i - 1}"]
+                            trainer.set_checkpoint(f"{name}_{index}")
 
             if self.patience is not None:
                 self._count -= 1
                 if self._count == 0:
                     trainer.early_stop(
-                        f'no improvement for {[k for k in self.trace]} since the last {self.patience} iterations, '
-                        f'finish training at iteration {trainer.total_iterations}')
+                        f"no improvement for {[k for k in self.trace]} since the last {self.patience} iterations, "
+                        f"finish training at iteration {trainer.total_iterations}"
+                    )
 
-            step_info.update({f'val_{k}': v for k, v in metrics.items()})
+            step_info.update({f"val_{k}": v for k, v in metrics.items()})
 
         if not self.each_iteration:
-            epoch = step_info['i_epoch']
+            epoch = step_info["i_epoch"]
             if epoch > self._epoch_count:
                 self._epoch_count = epoch
                 _validate()

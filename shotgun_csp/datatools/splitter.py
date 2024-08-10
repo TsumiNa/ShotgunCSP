@@ -1,17 +1,15 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
 
-from typing import Union, Tuple, Iterable, List
+
+from typing import Iterable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from pandas import DataFrame, Series
 from sklearn import utils
 from sklearn.base import BaseEstimator
-from sklearn.model_selection import train_test_split, KFold
-
-__all__ = ['Splitter']
+from sklearn.model_selection import KFold, train_test_split
 
 
 class Splitter(BaseEstimator):
@@ -19,13 +17,15 @@ class Splitter(BaseEstimator):
     Data splitter for train and test
     """
 
-    def __init__(self,
-                 size: int,
-                 *,
-                 test_size: Union[float, int] = 0.2,
-                 k_fold: Union[int, Iterable, None] = None,
-                 random_state: Union[int, None] = None,
-                 shuffle: bool = True):
+    def __init__(
+        self,
+        size: int,
+        *,
+        test_size: Union[float, int] = 0.2,
+        k_fold: Union[int, Iterable, None] = None,
+        random_state: Union[int, None] = None,
+        shuffle: bool = True,
+    ):
         """
         Parameters
         ----------
@@ -51,7 +51,7 @@ class Splitter(BaseEstimator):
             Whether or not to shuffle the data before splitting.
         """
         if k_fold is None and test_size == 0:
-            raise RuntimeError('<test_size> can be zero only if <cv> is not none')
+            raise RuntimeError("<test_size> can be zero only if <cv> is not none")
         self._k_fold = k_fold
         self._shuffle = shuffle
         self._test_size = test_size
@@ -84,7 +84,6 @@ class Splitter(BaseEstimator):
         return self._random_state
 
     def roll(self, random_state: int = None):
-
         if self._test_size == 0:
             if self._shuffle:
                 self._train = utils.shuffle(self._sample_size)
@@ -94,14 +93,20 @@ class Splitter(BaseEstimator):
             if isinstance(self._k_fold, Iterable):
                 k_fold_labels: pd.Series = pd.Series(self._k_fold).reset_index(drop=True)
                 unique_labels = k_fold_labels.unique()
-                test_size = round(unique_labels.size * self._test_size) if isinstance(self._test_size, float) else round(unique_labels.size * (self._test_size / self.size))
+                test_size = (
+                    round(unique_labels.size * self._test_size)
+                    if isinstance(self._test_size, float)
+                    else round(unique_labels.size * (self._test_size / self.size))
+                )
                 test_lables: pd.Series = pd.Series(unique_labels).sample(test_size, random_state=random_state)
-                self._train, self._test = k_fold_labels[~k_fold_labels.isin(test_lables)].index.values, k_fold_labels[k_fold_labels.isin(test_lables)].index.values
+                self._train, self._test = (
+                    k_fold_labels[~k_fold_labels.isin(test_lables)].index.values,
+                    k_fold_labels[k_fold_labels.isin(test_lables)].index.values,
+                )
             else:
-                self._train, self._test = train_test_split(self._sample_size,
-                                                           test_size=self._test_size,
-                                                           random_state=random_state,
-                                                           shuffle=self._shuffle)
+                self._train, self._test = train_test_split(
+                    self._sample_size, test_size=self._test_size, random_state=random_state, shuffle=self._shuffle
+                )
 
         if isinstance(self._k_fold, int):
             cv = KFold(n_splits=self._k_fold, shuffle=self._shuffle, random_state=random_state)
@@ -119,17 +124,14 @@ class Splitter(BaseEstimator):
             array = np.asarray(array)
         if not isinstance(array, (np.ndarray, pd.DataFrame, pd.Series)):
             raise TypeError(
-                f'<arrays> must be list, numpy.ndarray, pandas.DataFrame, or pandas.Series but got {array.__class__}.'
+                f"<arrays> must be list, numpy.ndarray, pandas.DataFrame, or pandas.Series but got {array.__class__}."
             )
         if array.shape[0] != self.size:
-            raise ValueError(
-                f'parameters <arrays> must have size {self.size} for dim 0 but got {array.shape[0]}'
-            )
+            raise ValueError(f"parameters <arrays> must have size {self.size} for dim 0 but got {array.shape[0]}")
         return array
 
     @staticmethod
     def _split(array, *idx):
-
         # all to np.array
         if isinstance(array, np.ndarray):
             return [array[i] for i in idx]
@@ -162,7 +164,7 @@ class Splitter(BaseEstimator):
         """
 
         if self._k_fold is None:
-            raise RuntimeError('parameter <cv> must be set')
+            raise RuntimeError("parameter <cv> must be set")
 
         for train, val in self._cv_indices:
             if less_for_train:
@@ -205,7 +207,7 @@ class Splitter(BaseEstimator):
             not return.
         """
         if self._test is None:
-            raise RuntimeError('split action is illegal because `test_size` is none')
+            raise RuntimeError("split action is illegal because `test_size` is none")
 
         if len(arrays) == 0:
             return self._train, self._test

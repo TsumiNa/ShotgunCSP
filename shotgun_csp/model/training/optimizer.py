@@ -1,16 +1,15 @@
-#  Copyright (c) 2021. TsumiNa. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
+
 
 from torch import optim
 
-from xenonpy.model.training.base import BaseOptimizer
+from shotgun_csp.model.training.base import BaseOptimizer
 
-__all__ = ['Adadelta', 'Adagrad', 'Adam', 'Adamax', 'ASGD', 'SGD', 'SparseAdam', 'RMSprop', 'Rprop', 'LBFGS']
+__all__ = ["Adadelta", "Adagrad", "Adam", "Adamax", "ASGD", "SGD", "SparseAdam", "RMSprop", "Rprop", "LBFGS"]
 
 
 class Adadelta(BaseOptimizer):
-
     def __init__(self, *, lr=1.0, rho=0.9, eps=1e-06, weight_decay=0):
         """Implements Adadelta algorithm.
 
@@ -31,7 +30,6 @@ class Adadelta(BaseOptimizer):
 
 
 class Adagrad(BaseOptimizer):
-
     def __init__(self, *, lr=0.01, lr_decay=0, weight_decay=0, initial_accumulator_value=0):
         """Implements Adagrad algorithm.
 
@@ -46,15 +44,16 @@ class Adagrad(BaseOptimizer):
         .. _Adaptive Subgradient Methods for Online Learning and Stochastic
             Optimization: http://jmlr.org/papers/v12/duchi11a.html
         """
-        super().__init__(optim.Adagrad,
-                         lr=lr,
-                         lr_decay=lr_decay,
-                         weight_decay=weight_decay,
-                         initial_accumulator_value=initial_accumulator_value)
+        super().__init__(
+            optim.Adagrad,
+            lr=lr,
+            lr_decay=lr_decay,
+            weight_decay=weight_decay,
+            initial_accumulator_value=initial_accumulator_value,
+        )
 
 
 class Adam(BaseOptimizer):
-
     def __init__(self, *, lr=1e-3, betas=(0.9, 0.999), eps=1e-8, weight_decay=0, amsgrad=False):
         r"""Implements Adam algorithm.
 
@@ -84,7 +83,6 @@ class Adam(BaseOptimizer):
 
 
 class AdamW(BaseOptimizer):
-
     def __init__(self, *, lr=1e-3, betas=(0.9, 0.999), eps=1e-8, weight_decay=0, amsgrad=False):
         r"""Implements AdamW algorithm.
 
@@ -114,7 +112,6 @@ class AdamW(BaseOptimizer):
 
 
 class SparseAdam(BaseOptimizer):
-
     def __init__(self, *, lr=0.001, betas=(0.9, 0.999), eps=1e-08):
         r"""Implements lazy version of Adam algorithm suitable for sparse tensors.
 
@@ -136,7 +133,6 @@ class SparseAdam(BaseOptimizer):
 
 
 class Adamax(BaseOptimizer):
-
     def __init__(self, *, lr=0.002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0):
         """Implements Adamax algorithm (a variant of Adam based on infinity norm).
 
@@ -157,7 +153,6 @@ class Adamax(BaseOptimizer):
 
 
 class ASGD(BaseOptimizer):
-
     def __init__(self, *, lr=0.002, lambd=0.0001, alpha=0.75, t0=1000000.0, weight_decay=0):
         """Implements Averaged Stochastic Gradient Descent.
 
@@ -179,16 +174,17 @@ class ASGD(BaseOptimizer):
 
 
 class LBFGS(BaseOptimizer):
-
-    def __init__(self,
-                 *,
-                 lr=1,
-                 max_iter=20,
-                 max_eval=None,
-                 tolerance_grad=1e-5,
-                 tolerance_change=1e-9,
-                 history_size=100,
-                 line_search_fn=None):
+    def __init__(
+        self,
+        *,
+        lr=1,
+        max_iter=20,
+        max_eval=None,
+        tolerance_grad=1e-5,
+        tolerance_change=1e-9,
+        history_size=100,
+        line_search_fn=None,
+    ):
         """Implements L-BFGS algorithm.
 
         .. warning::
@@ -217,18 +213,19 @@ class LBFGS(BaseOptimizer):
             history_size (int): update history size (default: 100).
         """
 
-        super().__init__(optim.LBFGS,
-                         lr=lr,
-                         max_iter=max_iter,
-                         max_eval=max_eval,
-                         tolerance_grad=tolerance_grad,
-                         tolerance_change=tolerance_change,
-                         history_size=history_size,
-                         line_search_fn=line_search_fn)
+        super().__init__(
+            optim.LBFGS,
+            lr=lr,
+            max_iter=max_iter,
+            max_eval=max_eval,
+            tolerance_grad=tolerance_grad,
+            tolerance_change=tolerance_change,
+            history_size=history_size,
+            line_search_fn=line_search_fn,
+        )
 
 
 class RMSprop(BaseOptimizer):
-
     def __init__(self, *, lr=0.01, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0, centered=False):
         """Implements RMSprop algorithm.
 
@@ -250,17 +247,12 @@ class RMSprop(BaseOptimizer):
 
         """
 
-        super().__init__(optim.RMSprop,
-                         lr=lr,
-                         alpha=alpha,
-                         eps=eps,
-                         weight_decay=weight_decay,
-                         momentum=momentum,
-                         centered=centered)
+        super().__init__(
+            optim.RMSprop, lr=lr, alpha=alpha, eps=eps, weight_decay=weight_decay, momentum=momentum, centered=centered
+        )
 
 
 class Rprop(BaseOptimizer):
-
     def __init__(self, *, lr=0.01, etas=(0.5, 1.2), step_sizes=(1e-06, 50)):
         """Implements the resilient backpropagation algorithm.
 
@@ -277,7 +269,6 @@ class Rprop(BaseOptimizer):
 
 
 class SGD(BaseOptimizer):
-
     def __init__(self, *, lr=0.01, momentum=0, dampening=0, weight_decay=0, nesterov=False):
         r"""Implements stochastic gradient descent (optionally with momentum).
 
@@ -323,9 +314,6 @@ class SGD(BaseOptimizer):
             The Nesterov version is analogously modified.
         """
 
-        super().__init__(optim.SGD,
-                         lr=lr,
-                         momentum=momentum,
-                         dampening=dampening,
-                         weight_decay=weight_decay,
-                         nesterov=nesterov)
+        super().__init__(
+            optim.SGD, lr=lr, momentum=momentum, dampening=dampening, weight_decay=weight_decay, nesterov=nesterov
+        )

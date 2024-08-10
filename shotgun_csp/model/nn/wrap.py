@@ -1,12 +1,13 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
+
+
 from functools import partial
 
 import torch as tc
 from torch import nn
 
-__all__ = ['Optim', 'LrScheduler', 'Init', 'L1']
+__all__ = ["Optim", "LrScheduler", "Init", "L1"]
 
 
 class Optim(object):

@@ -1,29 +1,29 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
 
-from typing import Union, List
+
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
 
-from xenonpy.descriptor.base import BaseDescriptor, BaseCompositionFeaturizer
+from shotgun_csp.descriptor.base import BaseCompositionFeaturizer, BaseDescriptor
 
 __all__ = [
-    'Compositions', 'Counting', 'WeightedAverage', 'WeightedSum', 'WeightedVariance',
-    'HarmonicMean', 'GeometricMean', 'MaxPooling', 'MinPooling'
+    "Compositions",
+    "Counting",
+    "WeightedAverage",
+    "WeightedSum",
+    "WeightedVariance",
+    "HarmonicMean",
+    "GeometricMean",
+    "MaxPooling",
+    "MinPooling",
 ]
 
 
 class Counting(BaseCompositionFeaturizer):
-
-    def __init__(self,
-                 *,
-                 one_hot_vec=False,
-                 n_jobs=-1,
-                 on_errors='raise',
-                 return_type='any',
-                 target_col=None):
+    def __init__(self, *, one_hot_vec=False, n_jobs=-1, on_errors="raise", return_type="any", target_col=None):
         """
 
         Parameters
@@ -53,13 +53,10 @@ class Counting(BaseCompositionFeaturizer):
             Default is None.
         """
 
-        super().__init__(n_jobs=n_jobs,
-                         on_errors=on_errors,
-                         return_type=return_type,
-                         target_col=target_col)
+        super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type, target_col=target_col)
         self.one_hot_vec = one_hot_vec
         self._elems = self.elements.index.tolist()
-        self.__authors__ = ['TsumiNa']
+        self.__authors__ = ["TsumiNa"]
 
     def mix_function(self, elems, nums):
         vec = np.zeros(len(self._elems), dtype=np.int)
@@ -114,7 +111,7 @@ class WeightedAverage(BaseCompositionFeaturizer):
 
     @property
     def feature_labels(self):
-        return ['ave:' + s for s in self.elements]
+        return ["ave:" + s for s in self.elements]
 
 
 class WeightedSum(BaseCompositionFeaturizer):
@@ -155,92 +152,7 @@ class WeightedSum(BaseCompositionFeaturizer):
 
     @property
     def feature_labels(self):
-        return ['sum:' + s for s in self.elements]
-
-
-class GeometricMean(BaseCompositionFeaturizer):
-    """
-
-    Parameters
-    ----------
-    elemental_info
-        Elemental level information for each element. For example, the ``atomic number``,
-        ``atomic radius``, and etc. By default (``None``), will use the XenonPy embedded information.
-    n_jobs: int
-        The number of jobs to run in parallel for both fit and predict.
-        Set -1 to use all cpu cores (default).
-        Inputs ``X`` will be split into some blocks then run on each cpu cores.
-    on_errors: string
-        How to handle exceptions in feature calculations. Can be 'nan', 'keep', 'raise'.
-        When 'nan', return a column with ``np.nan``.
-        The length of column corresponding to the number of feature labs.
-        When 'keep', return a column with exception objects.
-        The default is 'raise' which will raise up the exception.
-    return_type: str
-        Specific the return type.
-        Can be ``any``, ``array`` and ``df``.
-        ``array`` and ``df`` force return type to ``np.ndarray`` and ``pd.DataFrame`` respectively.
-        If ``any``, the return type dependent on the input type.
-        Default is ``any``
-    target_col
-        Only relevant when input is pd.DataFrame, otherwise ignored.
-        Specify a single column to be used for transformation.
-        If ``None``, all columns of the pd.DataFrame is used.
-        Default is None.
-    """
-
-    def mix_function(self, elems, nums):
-        elems_ = self.elements.loc[elems, :].values
-        w_ = np.array(nums).reshape(-1, 1)
-        tmp = elems_**w_
-        return np.power(tmp.prod(axis=0), 1 / sum(w_))
-
-    @property
-    def feature_labels(self):
-        return ['gmean:' + s for s in self.elements]
-
-
-class HarmonicMean(BaseCompositionFeaturizer):
-    """
-
-    Parameters
-    ----------
-    elemental_info
-        Elemental level information for each element. For example, the ``atomic number``,
-        ``atomic radius``, and etc. By default (``None``), will use the XenonPy embedded information.
-    n_jobs: int
-        The number of jobs to run in parallel for both fit and predict.
-        Set -1 to use all cpu cores (default).
-        Inputs ``X`` will be split into some blocks then run on each cpu cores.
-    on_errors: string
-        How to handle exceptions in feature calculations. Can be 'nan', 'keep', 'raise'.
-        When 'nan', return a column with ``np.nan``.
-        The length of column corresponding to the number of feature labs.
-        When 'keep', return a column with exception objects.
-        The default is 'raise' which will raise up the exception.
-    return_type: str
-        Specific the return type.
-        Can be ``any``, ``array`` and ``df``.
-        ``array`` and ``df`` force return type to ``np.ndarray`` and ``pd.DataFrame`` respectively.
-        If ``any``, the return type dependent on the input type.
-        Default is ``any``
-    target_col
-        Only relevant when input is pd.DataFrame, otherwise ignored.
-        Specify a single column to be used for transformation.
-        If ``None``, all columns of the pd.DataFrame is used.
-        Default is None.
-    """
-
-    def mix_function(self, elems, nums):
-        elems_ = 1 / self.elements.loc[elems, :].values
-        w_ = np.array(nums)
-        tmp = w_.dot(elems_)
-
-        return sum(w_) / tmp
-
-    @property
-    def feature_labels(self):
-        return ['hmean:' + s for s in self.elements]
+        return ["sum:" + s for s in self.elements]
 
 
 class WeightedVariance(BaseCompositionFeaturizer):
@@ -283,7 +195,7 @@ class WeightedVariance(BaseCompositionFeaturizer):
 
     @property
     def feature_labels(self):
-        return ['var:' + s for s in self.elements]
+        return ["var:" + s for s in self.elements]
 
 
 class MaxPooling(BaseCompositionFeaturizer):
@@ -323,7 +235,7 @@ class MaxPooling(BaseCompositionFeaturizer):
 
     @property
     def feature_labels(self):
-        return ['max:' + s for s in self.elements]
+        return ["max:" + s for s in self.elements]
 
 
 class MinPooling(BaseCompositionFeaturizer):
@@ -363,7 +275,7 @@ class MinPooling(BaseCompositionFeaturizer):
 
     @property
     def feature_labels(self):
-        return ['min:' + s for s in self.elements]
+        return ["min:" + s for s in self.elements]
 
 
 class Compositions(BaseDescriptor):
@@ -371,14 +283,16 @@ class Compositions(BaseDescriptor):
     Calculate elemental descriptors from compound's composition.
     """
 
-    classic = ['WeightedAverage', 'WeightedSum', 'WeightedVariance', 'MaxPooling', 'MinPooling']
+    _classic = ["WeightedAverage", "WeightedSum", "WeightedVariance", "MaxPooling", "MinPooling"]
 
-    def __init__(self,
-                 *,
-                 elemental_info: Union[pd.DataFrame, None] = None,
-                 n_jobs: int = -1,
-                 featurizers: Union[str, List[str]] = 'classic',
-                 on_errors: str = 'nan'):
+    def __init__(
+        self,
+        *,
+        elemental_info: Union[pd.DataFrame, None] = None,
+        n_jobs: int = -1,
+        featurizers: Union[str, List[str]] = "classic",
+        on_errors: str = "nan",
+    ):
         """
 
         Parameters
@@ -404,30 +318,11 @@ class Compositions(BaseDescriptor):
             The default is 'nan' which will raise up the exception.
         """
 
-        if featurizers == 'classic':
-            super().__init__(featurizers=self.classic)
-        else:
-            super().__init__(featurizers=featurizers)
+        super().__init__(featurizers=self._classic)
 
         self.composition = Counting(n_jobs=n_jobs, on_errors=on_errors)
-        self.composition = WeightedAverage(n_jobs=n_jobs,
-                                           on_errors=on_errors,
-                                           elemental_info=elemental_info)
-        self.composition = WeightedSum(n_jobs=n_jobs,
-                                       on_errors=on_errors,
-                                       elemental_info=elemental_info)
-        self.composition = WeightedVariance(n_jobs=n_jobs,
-                                            on_errors=on_errors,
-                                            elemental_info=elemental_info)
-        self.composition = GeometricMean(n_jobs=n_jobs,
-                                         on_errors=on_errors,
-                                         elemental_info=elemental_info)
-        self.composition = HarmonicMean(n_jobs=n_jobs,
-                                        on_errors=on_errors,
-                                        elemental_info=elemental_info)
-        self.composition = MaxPooling(n_jobs=n_jobs,
-                                      on_errors=on_errors,
-                                      elemental_info=elemental_info)
-        self.composition = MinPooling(n_jobs=n_jobs,
-                                      on_errors=on_errors,
-                                      elemental_info=elemental_info)
+        self.composition = WeightedAverage(n_jobs=n_jobs, on_errors=on_errors, elemental_info=elemental_info)
+        self.composition = WeightedSum(n_jobs=n_jobs, on_errors=on_errors, elemental_info=elemental_info)
+        self.composition = WeightedVariance(n_jobs=n_jobs, on_errors=on_errors, elemental_info=elemental_info)
+        self.composition = MaxPooling(n_jobs=n_jobs, on_errors=on_errors, elemental_info=elemental_info)
+        self.composition = MinPooling(n_jobs=n_jobs, on_errors=on_errors, elemental_info=elemental_info)

@@ -1,14 +1,13 @@
-#  Copyright (c) 2021. yoshida-lab. All rights reserved.
-#  Use of this source code is governed by a BSD-style
-#  license that can be found in the LICENSE file.
+# Copyright 2024 TsumiNa.
+# SPDX-License-Identifier: Apache-2.0
+
 
 from torch.nn.utils import clip_grad_norm_, clip_grad_value_
 
-__all__ = ['ClipNorm', 'ClipValue']
+__all__ = ["ClipNorm", "ClipValue"]
 
 
 class ClipNorm(object):
-
     def __init__(self, max_norm, norm_type=2):
         r"""Clips gradient norm of an iterable of parameters.
 
@@ -31,7 +30,6 @@ class ClipNorm(object):
 
 
 class ClipValue(object):
-
     def __init__(self, clip_value):
         r"""Clips gradient of an iterable of parameters at specified value.
 
