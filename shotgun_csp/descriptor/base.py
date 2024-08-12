@@ -16,8 +16,7 @@ from joblib import Parallel, delayed
 from pymatgen.core.composition import Composition as PMGComp
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from shotgun_csp.datatools.preset import preset
-from shotgun_csp.utils import Switch, TimedMetaClass
+from shotgun_csp.utils import Switch, TimedMetaClass, preset
 
 
 class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
@@ -43,9 +42,9 @@ class BaseFeaturizer(BaseEstimator, TransformerMixin, metaclass=ABCMeta):
         featurizer = SomeFeaturizer()
         features = featurizer.fit_transform(X)
 
-    You can also employ the featurizer as part of a ScikitLearn Pipeline object.
+    You can also employ the featurizer as part of a Scikit-Learn Pipeline object.
     You would then provide your input data as an array to the Pipeline, which would
-    output the featurers as an :class:`pandas.DataFrame`.
+    output the features as an :class:`pandas.DataFrame`.
 
     :class:`BaseFeaturizer` also provide you to retrieving proper references for a featurizer.
     The ``__citations__`` returns a list of papers that should be cited.
@@ -645,14 +644,17 @@ class BaseCompositionFeaturizer(BaseFeaturizer, metaclass=ABCMeta):
         super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type, target_col=target_col)
 
         if elemental_info is None:
-            self.elements = preset.elements_completed.copy()
+            self.elements = preset.elements_completed
         else:
             self.elements = elemental_info
         self.__authors__ = ["TsumiNa"]
 
-    def featurize(self, comp):
+    def featurize(self, comp: Union[str, PMGComp, dict]):
         elems_, nums_ = [], []
-        if isinstance(comp, PMGComp):
+        if isinstance(comp, dict):
+            comp = comp
+        else:
+            comp = comp if isinstance(comp, PMGComp) else PMGComp(comp)
             comp = comp.as_dict()
         for e, n in comp.items():
             elems_.append(e)

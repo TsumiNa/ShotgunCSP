@@ -6,9 +6,9 @@ from typing import Any, Callable, Dict, Union
 
 import numpy as np
 
+from shotgun_csp.model import classification_metrics, regression_metrics
 from shotgun_csp.model.training import Trainer
 from shotgun_csp.model.training.base import BaseExtension
-from shotgun_csp.model.utils import classification_metrics, regression_metrics
 
 
 class Validator(BaseExtension):

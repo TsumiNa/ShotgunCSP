@@ -6,8 +6,6 @@ from torch.optim import lr_scheduler
 
 from shotgun_csp.model.training.base import BaseLRScheduler
 
-__all__ = ["LambdaLR", "StepLR", "MultiStepLR", "ExponentialLR", "CosineAnnealingLR", "ReduceLROnPlateau", "CyclicLR"]
-
 
 class LambdaLR(BaseLRScheduler):
     def __init__(self, *, lr_lambda, last_epoch=-1):

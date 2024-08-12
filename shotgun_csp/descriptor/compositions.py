@@ -15,8 +15,6 @@ __all__ = [
     "WeightedAverage",
     "WeightedSum",
     "WeightedVariance",
-    "HarmonicMean",
-    "GeometricMean",
     "MaxPooling",
     "MinPooling",
 ]
@@ -290,7 +288,7 @@ class Compositions(BaseDescriptor):
         *,
         elemental_info: Union[pd.DataFrame, None] = None,
         n_jobs: int = -1,
-        featurizers: Union[str, List[str]] = "classic",
+        featurizers: Union[None, List[str]] = None,
         on_errors: str = "nan",
     ):
         """
@@ -318,7 +316,7 @@ class Compositions(BaseDescriptor):
             The default is 'nan' which will raise up the exception.
         """
 
-        super().__init__(featurizers=self._classic)
+        super().__init__(featurizers=featurizers or self._classic)
 
         self.composition = Counting(n_jobs=n_jobs, on_errors=on_errors)
         self.composition = WeightedAverage(n_jobs=n_jobs, on_errors=on_errors, elemental_info=elemental_info)

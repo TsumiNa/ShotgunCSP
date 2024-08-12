@@ -4,8 +4,6 @@
 
 from torch.nn.utils import clip_grad_norm_, clip_grad_value_
 
-__all__ = ["ClipNorm", "ClipValue"]
-
 
 class ClipNorm(object):
     def __init__(self, max_norm, norm_type=2):

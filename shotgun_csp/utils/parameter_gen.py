@@ -3,12 +3,10 @@
 #  license that can be found in the LICENSE file.
 
 from collections import OrderedDict
-from typing import Union, Dict, Callable, Sequence, Any, Optional
+from typing import Any, Callable, Dict, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
-
-__all__ = ['ParameterGenerator']
 
 
 class ParameterGenerator(object):
@@ -28,7 +26,7 @@ class ParameterGenerator(object):
             Parameter candidate.
         """
         if len(kwargs) == 0:
-            raise RuntimeError('need parameter candidate')
+            raise RuntimeError("need parameter candidate")
 
         np.random.seed(seed)
 
@@ -43,7 +41,7 @@ class ParameterGenerator(object):
             elif callable(v):
                 self.funcs[k] = v
             elif isinstance(v, dict):
-                repeat = v['repeat']
+                repeat = v["repeat"]
                 self.dicts[k] = v
 
                 if isinstance(repeat, str):
@@ -66,10 +64,10 @@ class ParameterGenerator(object):
                 tmp[k] = v()
 
             for k, v in reversed(self.dicts.items()):
-                data = v['data']
-                repeat = v['repeat']
-                if 'replace' in v:
-                    replace = v['replace']
+                data = v["data"]
+                repeat = v["repeat"]
+                if "replace" in v:
+                    replace = v["replace"]
                 else:
                     replace = True
 

@@ -6,8 +6,6 @@ from torch import optim
 
 from shotgun_csp.model.training.base import BaseOptimizer
 
-__all__ = ["Adadelta", "Adagrad", "Adam", "Adamax", "ASGD", "SGD", "SparseAdam", "RMSprop", "Rprop", "LBFGS"]
-
 
 class Adadelta(BaseOptimizer):
     def __init__(self, *, lr=1.0, rho=0.9, eps=1e-06, weight_decay=0):

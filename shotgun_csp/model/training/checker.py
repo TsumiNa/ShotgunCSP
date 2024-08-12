@@ -13,8 +13,6 @@ from torch.nn import Module
 
 from shotgun_csp.model.training.base import BaseRunner
 
-__all__ = ["Checker"]
-
 
 class Checker(object):
     """
@@ -111,7 +109,7 @@ class Checker(object):
             A pytorch model.
         """
         if (self._path / "model.pth.m").exists():
-            model = torch.load(str(self._path / "model.pth.m"), map_location=self._device)
+            model = torch.load(str(self._path / "model.pth.m"), weights_only=False, map_location=self._device)
             state = self.final_state
 
             if state is not None:
@@ -159,7 +157,7 @@ class Checker(object):
     @property
     def init_state(self):
         if (self._path / "init_state.pth.s").exists():
-            return torch.load(str(self._path / "init_state.pth.s"), map_location=self._device)
+            return torch.load(str(self._path / "init_state.pth.s"), weights_only=False, map_location=self._device)
         return None
 
     @init_state.setter
@@ -174,7 +172,7 @@ class Checker(object):
     @property
     def final_state(self):
         if (self._path / "final_state.pth.s").exists():
-            return torch.load(str(self._path / "final_state.pth.s"), map_location=self._device)
+            return torch.load(str(self._path / "final_state.pth.s"), weights_only=False, map_location=self._device)
         return None
 
     @final_state.setter
@@ -219,7 +217,7 @@ class Checker(object):
         if patten == "pd":
             return pd.read_pickle(fp)
         if patten == "pth":
-            return torch.load(fp, map_location=self._device)
+            return torch.load(fp, weights_only=True, map_location=self._device)
         if patten == "pkl":
             return joblib.load(fp)
         else:

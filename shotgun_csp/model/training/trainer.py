@@ -17,8 +17,6 @@ from shotgun_csp.model.training import Checker, ClipNorm, ClipValue
 from shotgun_csp.model.training.base import BaseLRScheduler, BaseOptimizer, BaseRunner
 from shotgun_csp.utils import camel_to_snake
 
-__all__ = ["Trainer"]
-
 
 class Trainer(BaseRunner):
     checkpoint_tuple = namedtuple("checkpoint", "id iterations model_state")

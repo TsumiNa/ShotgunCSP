@@ -19,8 +19,6 @@ from sklearn.metrics import (
     recall_score,
 )
 
-__all__ = ["regression_metrics", "classification_metrics"]
-
 
 def regression_metrics(y_true: Union[np.ndarray, pd.Series], y_pred: Union[np.ndarray, pd.Series]) -> OrderedDict:
     """

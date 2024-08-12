@@ -1,7 +1,7 @@
 
 # Shotgun CSP
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/TsumiNa/ShotgunCSP)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/TsumiNa/ShotgunCSP?quickstart=1)
 
 **Shotgun CSP** is a Python package designed to solve the crystal structure prediction (CSP) problem using a non-iterative, single-shot screening framework. This method leverages a large library of virtually created crystal structures and employs a machine-learning energy predictor for efficient and accurate predictions.
 
@@ -23,7 +23,7 @@ To install **shotgun-csp**, you can use [Poetry](https://python-poetry.org/) and
 pip install poetry
 
 # Clone the repository
-git clone https://github.com/yourusername/shotgun-csp.git
+git clone https://github.com/tsumina/shotgun-csp.git
 cd shotgun-csp
 
 # Install dependencies and package
@@ -42,14 +42,20 @@ Here is a simple example of how to use **shotgun-csp**:
 
 ```python
 from shotgun_csp.generator import TemplateSelector
-from shotgun_csp.io import VASPInputGenerator
+from shotgun_csp.utils import VASPInputGenerator
 
-# Example usage
-selector = TemplateSelector()
-templates = selector.from(<pymatgen structures>, filter='DBSCAN')
+# Select templates
+selector = TemplateSelector(target=<composition>, volume=<predicted volume>)
+templates = selector(<pymatgen structures>, filter=<structure filter (optional)>)
 
-vasp_inputs = VASPInputGenerator(templates)
+# Generate VASP input
+generator = VASPInputGenerator(save_to='/path/to/save')
+generator.static_input(<pymatgen structure>)  # static calculation
+generator.relax_input(<pymatgen structure>)  # relax calculation
+
 ```
+
+See [example](example/CSP_with_ShotgunCSP-GT.ipynb) for details.
 
 <!-- Please refer to the [documentation](https://yourdocumentationlink) for more detailed instructions and advanced usage. -->
 

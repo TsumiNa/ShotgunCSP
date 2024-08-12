@@ -12,7 +12,6 @@ from typing import Any, Callable, OrderedDict, Union
 import numpy as np
 import torch
 
-from shotgun_csp import __version__
 from shotgun_csp.model.training import Checker, Trainer
 from shotgun_csp.model.training.base import BaseExtension, BaseRunner
 
@@ -165,7 +164,6 @@ class Persist(BaseExtension):
             system=sys_ver(),
             numpy=np.__version__,
             torch=torch.__version__,
-            xenonpy=__version__,
             device=str(trainer.device),
             start=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
             finish="N/A",

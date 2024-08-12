@@ -4,8 +4,6 @@
 import torch
 from torch import nn
 
-__all__ = ["ConvLayer", "CrystalGraphConvNet"]
-
 
 class ConvLayer(nn.Module):
     """

@@ -2,13 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import re
 import time
 import types
 from collections import defaultdict
+from contextlib import contextmanager
 from datetime import timedelta
 from functools import wraps
-
-__all__ = ["Switch", "TimedMetaClass", "Timer", "Singleton"]
+from pathlib import Path
 
 
 class Switch(object):
@@ -142,3 +143,93 @@ class Singleton(type):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
+
+@contextmanager
+def set_env(**kwargs):
+    """
+    Set temp environment variable with ``with`` statement.
+
+    Examples
+    --------
+    >>> import os
+    >>> with set_env(test='test env'):
+    >>>    print(os.getenv('test'))
+    test env
+    >>> print(os.getenv('test'))
+    None
+
+    Parameters
+    ----------
+    kwargs: dict[str]
+        Dict with string value.
+    """
+    import os
+
+    tmp = dict()
+    for k, v in kwargs.items():
+        tmp[k] = os.getenv(k)
+        os.environ[k] = v
+    yield
+    for k, v in tmp.items():
+        if not v:
+            del os.environ[k]
+        else:
+            os.environ[k] = v
+
+
+def camel_to_snake(text):
+    str1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", text)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", str1).lower()
+
+
+def absolute_path(path, ignore_err=True):
+    """
+    Resolve path when path include ``~``, ``parent/here``.
+
+    Parameters
+    ----------
+    path: str
+        Path to expand.
+    ignore_err: bool
+        FileNotFoundError is raised when set to False.
+        When True, the path will be created.
+    Returns
+    -------
+    str
+        Expanded path.
+    """
+    from sys import version_info
+
+    if isinstance(path, str):
+        path = Path(path)
+
+    if version_info[1] == 5:
+        if ignore_err:
+            path.expanduser().mkdir(parents=True, exist_ok=True)
+        return str(path.expanduser().resolve())
+    return str(path.expanduser().resolve(not ignore_err))
+
+
+def get_sha256(fname):
+    """
+    Calculate file's sha256 value
+
+    Parameters
+    ----------
+    fname: str
+        File name.
+
+    Returns
+    -------
+    str
+        sha256 value.
+    """
+    from hashlib import sha256
+
+    hasher = sha256()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+    return hasher.hexdigest()

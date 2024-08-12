@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from pymatgen.core.structure import Structure
 
-from shotgun_csp.datatools import preset
+from shotgun_csp.utils import preset
 
 from .base import BaseFeaturizer
 
