@@ -13,9 +13,11 @@ from torch.nn import Module
 from torch.optim.lr_scheduler import ReduceLROnPlateau, _LRScheduler
 from torch.utils.data import DataLoader
 
-from shotgun_csp.model.training import Checker, ClipNorm, ClipValue
-from shotgun_csp.model.training.base import BaseLRScheduler, BaseOptimizer, BaseRunner
 from shotgun_csp.utils import camel_to_snake
+
+from .base import BaseLRScheduler, BaseOptimizer, BaseRunner
+from .checker import Checker
+from .clip_grad import ClipNorm, ClipValue
 
 
 class Trainer(BaseRunner):

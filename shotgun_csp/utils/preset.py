@@ -5,7 +5,7 @@ import os
 
 import pandas as pd
 
-from shotgun_csp.utils.collection import Singleton
+from .toolbox import Singleton
 
 
 class _Preset(metaclass=Singleton):

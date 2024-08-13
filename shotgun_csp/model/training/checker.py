@@ -11,7 +11,7 @@ import pandas as pd
 import torch
 from torch.nn import Module
 
-from shotgun_csp.model.training.base import BaseRunner
+from .base import BaseRunner
 
 
 class Checker(object):
