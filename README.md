@@ -55,7 +55,7 @@ generator.relax_input(<pymatgen structure>)  # relax calculation
 
 ```
 
-See [example](example/CSP_with_ShotgunCSP-GT.ipynb) for details.
+See [example](examples/CSP_with_ShotgunCSP-GT.ipynb) for details.
 
 <!-- Please refer to the [documentation](https://yourdocumentationlink) for more detailed instructions and advanced usage. -->
 
