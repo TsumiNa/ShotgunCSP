@@ -12,6 +12,11 @@
 - Generative models based on element substitution (**ShotgunCSP-GT**) and symmetry-restricted structure generation (**ShotgunCSP-GW**)
 - High prediction accuracy with reduced computational intensity
 
+> **NOTE**
+>
+> The release of the ShotgunCSP-GW-based generator is anticipated for 2026.
+
+
 ## Installation
 
 Before installing  **shotgun-csp**, you have to install **PyTorch (^2.0.0)** first. Please follow the [official installation guidance](https://pytorch.org/get-started/locally/).
