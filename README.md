@@ -14,15 +14,12 @@
 
 ## Installation
 
-Before install  **shotgun-csp**, you have to install **PyTorch (^2.0.0)** first. Please follow the [official installation guidance](https://pytorch.org/get-started/locally/).
+Before installing  **shotgun-csp**, you have to install **PyTorch (^2.0.0)** first. Please follow the [official installation guidance](https://pytorch.org/get-started/locally/).
 
 To install **shotgun-csp**, you can use [Poetry](https://python-poetry.org/):
 <!-- To install **shotgun-csp**, you can use [Poetry](https://python-poetry.org/) and [PyPI](https://pypi.org/): -->
 
 ```bash
-# Install poetry if you haven't already
-pip install poetry
-
 # Clone the repository
 git clone https://github.com/tsumina/shotgun-csp.git
 cd shotgun-csp
