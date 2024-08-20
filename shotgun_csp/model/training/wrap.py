@@ -6,6 +6,28 @@ from functools import partial
 
 import torch as tc
 from torch import nn
+from torch.nn.modules.loss import (
+    BCELoss,  # noqa: F401
+    BCEWithLogitsLoss,  # noqa: F401
+    CosineEmbeddingLoss,  # noqa: F401
+    CrossEntropyLoss,  # noqa: F401
+    CTCLoss,  # noqa: F401
+    HingeEmbeddingLoss,  # noqa: F401
+    KLDivLoss,  # noqa: F401
+    L1Loss,  # noqa: F401
+    MarginRankingLoss,  # noqa: F401
+    MSELoss,  # noqa: F401
+    MultiLabelMarginLoss,  # noqa: F401
+    MultiLabelSoftMarginLoss,  # noqa: F401
+    MultiMarginLoss,  # noqa: F401
+    NLLLoss,  # noqa: F401
+    PoissonNLLLoss,  # noqa: F401
+    SmoothL1Loss,  # noqa: F401
+    SoftMarginLoss,  # noqa: F401
+    TripletMarginLoss,  # noqa: F401
+    TripletMarginWithDistanceLoss,  # noqa: F401
+)
+from torch.utils.data import DataLoader  # noqa: F401
 
 
 class Optim(object):

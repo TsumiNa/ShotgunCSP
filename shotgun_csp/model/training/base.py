@@ -6,8 +6,8 @@ from typing import Any, Dict, Iterable, NamedTuple, OrderedDict, Tuple, Union
 
 import torch
 from sklearn.base import BaseEstimator
-from torch.optim import Optimizer  # noqa
-from torch.optim.lr_scheduler import _LRScheduler  # noqa
+from torch.optim import Optimizer
+from torch.optim.lr_scheduler import _LRScheduler
 
 from shotgun_csp.utils import TimedMetaClass, camel_to_snake
 

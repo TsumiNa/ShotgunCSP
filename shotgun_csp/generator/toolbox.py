@@ -14,9 +14,9 @@ from pymatgen.core import Composition, Structure
 
 from shotgun_csp.descriptor import Compositions
 from shotgun_csp.model.cgcnn import CrystalGraphConvNet
-from shotgun_csp.model.extension import TensorConverter
 from shotgun_csp.model.sequential import SequentialLinear
 from shotgun_csp.model.training import Checker, Trainer
+from shotgun_csp.model.training.extension import TensorConverter
 
 
 def predict_volume(
