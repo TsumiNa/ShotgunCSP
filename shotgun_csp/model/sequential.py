@@ -6,7 +6,7 @@ from typing import Any, Callable, Optional, Sequence, Union
 
 from torch import nn
 
-from shotgun_csp.model.wrap import L1
+from .training.wrap import L1
 
 
 class Layer1d(nn.Module):

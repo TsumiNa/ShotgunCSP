@@ -19,8 +19,8 @@ __all__ = [
     "VASPSetting",
 ]
 
-from .collection import Singleton, Switch, TimedMetaClass, Timer, absolute_path, camel_to_snake, get_sha256, set_env
 from .parameter_gen import ParameterGenerator
 from .preset import preset
 from .product import Product
+from .toolbox import Singleton, Switch, TimedMetaClass, Timer, absolute_path, camel_to_snake, get_sha256, set_env
 from .vasp import VASPInputGenerator, VASPSetting

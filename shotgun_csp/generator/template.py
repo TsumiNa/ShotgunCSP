@@ -13,9 +13,10 @@ from pymatgen.core.structure import Composition, Structure
 from scipy.spatial.distance import cdist
 from tqdm.auto import tqdm
 
-from shotgun_csp.generator.filter import StructureFilter
-from shotgun_csp.generator.utils import convert_struct
 from shotgun_csp.utils import preset
+
+from .filter import StructureFilter
+from .toolbox import convert_struct
 
 
 class TemplateSelector:

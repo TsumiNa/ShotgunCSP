@@ -4,7 +4,7 @@
 
 from torch.optim import lr_scheduler
 
-from shotgun_csp.model.training.base import BaseLRScheduler
+from .base import BaseLRScheduler
 
 
 class LambdaLR(BaseLRScheduler):

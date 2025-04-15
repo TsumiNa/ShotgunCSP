@@ -12,4 +12,4 @@ __all__ = [
 
 from .filter import DBSCANFilter, StructureFilter
 from .template import TemplateSelector
-from .utils import calculate_dissimilarity, convert_struct, predict_volume
+from .toolbox import calculate_dissimilarity, convert_struct, predict_volume

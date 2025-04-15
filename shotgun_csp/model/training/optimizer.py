@@ -4,7 +4,7 @@
 
 from torch import optim
 
-from shotgun_csp.model.training.base import BaseOptimizer
+from .base import BaseOptimizer
 
 
 class Adadelta(BaseOptimizer):
